@@ -16,6 +16,9 @@ class CreateConnectionsTable extends Migration
         Schema::create('connections', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->string('type', 20);
+            $table->string('value', 50);
+            $table->foreignId('user_id')->constrained('users');
         });
     }
 

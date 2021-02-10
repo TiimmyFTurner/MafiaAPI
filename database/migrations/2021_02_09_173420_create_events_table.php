@@ -16,6 +16,12 @@ class CreateEventsTable extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->string('title', 200);
+            $table->string('description', 500);
+            $table->string('location', 200);
+            $table->timestamp('date')->nullable();
+            $table->foreignId('user_id')->constrained('users');
+            $table->boolean('status')->nullable();
         });
     }
 
