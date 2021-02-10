@@ -13,13 +13,13 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+use App\Http\Controllers\Api\v1\Event as EventController;
+use App\Http\Controllers\Api\v1\Connection as ConnectionController;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
 Route::group(['prefix' => 'v1'], function () {
-    Route::get('/Api', function () {
-        return "hi";
-    });
+    Route::apiResources(['event' => EventController::class, 'connection' => ConnectionController::class]);
 });
