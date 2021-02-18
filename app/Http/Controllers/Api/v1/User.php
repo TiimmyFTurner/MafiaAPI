@@ -19,7 +19,7 @@ class User extends Controller
     public function index()
     {
         return response()->json([
-            'id' => Auth::user()->id,
+            'status' => 200,
             'data' => new UserCollection(UserModel::where('id', Auth::user()->id)->with(['connections', 'events'])->first())
         ]);
     }
