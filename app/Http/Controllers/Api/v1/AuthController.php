@@ -8,13 +8,32 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redis;
 
 class AuthController extends Controller
 {
-    public function signup(Request $request)
+    public function register(Request $request)
     {
-        # code...
+        try {
+            $request->validate(
+                [
+                    'email' => 'email|required',
+                    'name' => 'required',
+                    'password' => 'required'
+                ]
+            );
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+            return $this->login($request);
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in Registration',
+                'error' => $error,
+            ]);
+        }
     }
 
     public function login(Request $request)
@@ -24,10 +43,15 @@ class AuthController extends Controller
                 'email' => 'email|required',
                 'password' => 'required'
             ]);
-            $credentials = request(['email', 'password']);
+
+            $credentials = [
+                'email' => $request->email,
+                'password' => $request->password,
+            ];
+
             if (!Auth::attempt($credentials)) {
                 return response()->json([
-                    'status_code' => 500,
+                    'status_code' => 401,
                     'message' => 'Unauthorized'
                 ]);
             }
@@ -37,9 +61,8 @@ class AuthController extends Controller
             }
             $tokenResult = $user->createToken('authToken')->plainTextToken;
             return response()->json([
-                'status_code' => 200,
-                'access_token' => $tokenResult,
-                'token_type' => 'Bearer',
+                'status' => 200,
+                'data' => ['token' => $tokenResult, 'token_type' => 'Bearer', 'user' => Auth::user()],
             ]);
         } catch (Exception $error) {
             return response()->json([
