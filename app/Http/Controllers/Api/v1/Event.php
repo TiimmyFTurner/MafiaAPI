@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Event as EventModel;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class Event extends Controller
 {
@@ -14,7 +17,7 @@ class Event extends Controller
      */
     public function index()
     {
-        //
+        return EventModel::paginate(10);
     }
 
     /**
@@ -25,7 +28,38 @@ class Event extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $request->validate(
+                [
+                    'title' => 'required',
+                    'description' => 'required',
+                    'location' => 'required',
+                    'date' => 'required'
+                ]
+            );
+            $event = EventModel::create([
+                'title' => $request->title,
+                'description' => $request->description,
+                'location' => $request->location,
+                'date' => $request->date,
+                'user_id' => Auth::user()->id,
+                'status' => $request->status,
+
+            ]);
+            return response()->json([
+                'status' => 200,
+                'data' => [
+                    'message' => 'saccess',
+                    'event' => $event
+                ]
+            ]);
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in store',
+                'error' => $error,
+            ]);
+        }
     }
 
     /**
