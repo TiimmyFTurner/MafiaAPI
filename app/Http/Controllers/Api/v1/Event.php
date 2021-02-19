@@ -17,7 +17,7 @@ class Event extends Controller
      */
     public function index()
     {
-        return EventModel::paginate(10);
+        return EventModel::with('connections')->paginate(10);
     }
 
     /**
@@ -68,9 +68,9 @@ class Event extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($filter)
     {
-        //
+        return EventModel::where('location', 'LIKE', "%{$filter}%")->orWhere('title', 'LIKE', "%{$filter}%")->with('connections', 'user')->paginate(10);
     }
 
     /**
@@ -82,7 +82,19 @@ class Event extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try {
+            EventModel::find($id)->update(['status' => $request->status]);
+            return response()->json([
+                'status' => 200,
+                'data' => ['message' => 'update saccessful'],
+            ]);
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in update',
+                'error' => $error,
+            ]);
+        }
     }
 
     /**
@@ -93,6 +105,18 @@ class Event extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            EventModel::find($id)->delete();
+            return response()->json([
+                'status' => 200,
+                'data' => ['message' => 'delete saccessful'],
+            ]);
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in update',
+                'error' => $error,
+            ]);
+        }
     }
 }
