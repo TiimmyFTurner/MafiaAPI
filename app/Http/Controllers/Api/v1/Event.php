@@ -42,7 +42,7 @@ class Event extends Controller
                 'description' => $request->description,
                 'location' => $request->location,
                 'date' => $request->date,
-                'user_id' => Auth::user()->id,
+                'user_id' => Auth::id(),
                 'status' => $request->status,
 
             ]);

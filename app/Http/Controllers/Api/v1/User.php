@@ -20,7 +20,7 @@ class User extends Controller
     {
         return response()->json([
             'status' => 200,
-            'data' => new UserCollection(UserModel::where('id', Auth::user()->id)->with(['connections', 'events'])->first())
+            'data' => new UserCollection(UserModel::where('id', Auth::id())->with(['connections', 'events'])->first())
         ]);
     }
 
