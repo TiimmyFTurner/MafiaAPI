@@ -114,7 +114,7 @@ class Event extends Controller
         } catch (Exception $error) {
             return response()->json([
                 'status' => 500,
-                'message' => 'Error in update',
+                'message' => 'Error in delete',
                 'error' => $error,
             ]);
         }
