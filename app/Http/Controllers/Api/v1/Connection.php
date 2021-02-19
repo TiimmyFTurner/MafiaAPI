@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Connection as ConnectionModel;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class Connection extends Controller
 {
@@ -25,7 +28,33 @@ class Connection extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $request->validate(
+                [
+                    'type' => 'required',
+                    'value' => 'required',
+
+                ]
+            );
+            $connection = ConnectionModel::create([
+                'type' => $request->type,
+                'value' => $request->value,
+                'user_id' => Auth::id(),
+            ]);
+            return response()->json([
+                'status' => 200,
+                'data' => [
+                    'message' => 'saccess',
+                    'connection' => $connection
+                ]
+            ]);
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in store',
+                'error' => $error,
+            ]);
+        }
     }
 
     /**
@@ -59,6 +88,18 @@ class Connection extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            ConnectionModel::find($id)->delete();
+            return response()->json([
+                'status' => 200,
+                'data' => ['message' => 'delete saccessful'],
+            ]);
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in delete',
+                'error' => $error,
+            ]);
+        }
     }
 }
