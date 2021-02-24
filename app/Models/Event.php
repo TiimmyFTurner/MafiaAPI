@@ -26,4 +26,8 @@ class Event extends Model
     {
         return $this->hasMany(Connection::class, 'user_id', 'user_id');
     }
+    public function comments()
+    {
+        return $this->hasMany(Comment::class,'event_id');
+    }
 }
