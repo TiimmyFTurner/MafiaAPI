@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 use App\Http\Controllers\Api\v1\AuthController;
+use App\Http\Controllers\Api\v1\CommentController;
 use App\Http\Controllers\Api\v1\Event as EventController;
 use App\Http\Controllers\Api\v1\Connection as ConnectionController;
 use App\Http\Controllers\Api\v1\User as UserController;
@@ -29,6 +30,11 @@ Route::group(['prefix' => 'v1'], function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
     Route::middleware('auth:sanctum')->group(function () {
-        Route::apiResources(['event' => EventController::class, 'connection' => ConnectionController::class, 'user' => UserController::class]);
+        Route::apiResources([
+            'event' => EventController::class,
+            'connection' => ConnectionController::class,
+            'user' => UserController::class,
+            'comment' => CommentController::class
+        ]);
     });
 });
