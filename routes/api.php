@@ -1,8 +1,7 @@
 <?php
 
+namespace App\Http\Controllers\Api\v2;
 
-
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,26 +14,56 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-use App\Http\Controllers\Api\v1\AuthController;
-use App\Http\Controllers\Api\v1\CommentController;
-use App\Http\Controllers\Api\v1\Event as EventController;
-use App\Http\Controllers\Api\v1\Connection as ConnectionController;
-use App\Http\Controllers\Api\v1\User as UserController;
-use Illuminate\Routing\RouteGroup;
-use Illuminate\Support\Facades\Auth;
+// use Illuminate\Http\Request;
+// use App\Http\Controllers\Api\v1\AuthController as AuthController1;
+// use App\Http\Controllers\Api\v1\CommentController as CommentController1;
+// use App\Http\Controllers\Api\v1\Event as EventController1;
+// use App\Http\Controllers\Api\v1\Connection as ConnectionController1;
+// use App\Http\Controllers\Api\v1\User as UserController1;
 
+// Route::group(['prefix' => 'v1'], function () {
+//     Route::post('register', [AuthController1::class, 'register']);
+//     Route::post('login', [AuthController1::class, 'login']);
+//     Route::middleware('auth:sanctum')->group(function () {
+//         Route::apiResources([
+//             'event' => EventController1::class,
+//             'connection' => ConnectionController1::class,
+//             'user' => UserController1::class,
+//             'comment' => CommentController1::class
+//         ]);
+//     });
+// });
 
-
-
-Route::group(['prefix' => 'v1'], function () {
-    Route::post('register', [AuthController::class, 'register']);
-    Route::post('login', [AuthController::class, 'login']);
+Route::prefix('v2')->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::get('', [AuthController::class, 'index']);
+        Route::post('signup', [AuthControoler::class, 'signup']);
+        Route::post('login', [AuthController::class, 'login']);
+    });
     Route::middleware('auth:sanctum')->group(function () {
-        Route::apiResources([
-            'event' => EventController::class,
-            'connection' => ConnectionController::class,
-            'user' => UserController::class,
-            'comment' => CommentController::class
-        ]);
+        Route::prefix('users')->group(function () {
+            Route::get('{id}', [UserController::class, 'show']);
+            Route::put('{id}', [UserController::class, 'update']);
+            Route::delete('{id}', [UserController::class, 'destroy']);
+            Route::get('{id}/connections', [UserController::class, 'coonections']);
+            Route::get('{id}/events', [UserController::class, 'events']);
+        });
+        Route::prefix('events')->group(function () {
+            Route::get('', [EventController::class, 'index']);
+            Route::post('', [EventController::class, 'store']);
+            Route::get('{id}', [EventController::class, 'show']);
+            Route::put('{id}', [EventController::class, 'update']);
+            Route::delete('{id}', [EventController::class, 'destroy']);
+            Route::get('{id}/connections', [EventController::class, 'coonections']);
+            Route::get('{id}/comment', [EventController::class, 'comment']);
+        });
+        Route::prefix('connections')->group(function () {
+            Route::post('', [ConnectionController::class, 'store']);
+            Route::delete('{id}', [ConnectionController::class, 'show']);
+        });
+        Route::prefix('comments')->group(function () {
+            Route::post('', [CommentController::class, 'store']);
+            Route::delete('{id}', [CommentController::class, 'show']);
+        });
     });
 });
