@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Api\v2;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -14,7 +18,10 @@ class AuthController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            'status' => 200,
+            'data' => ['user' => auth()->user()],
+        ]);
     }
 
     /**
@@ -23,42 +30,65 @@ class AuthController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function signup(Request $request)
     {
-        //
+        try {
+            $request->validate(
+                [
+                    'name' => 'required',
+                    'email' => 'email|required',
+                    'password' => 'required'
+                ]
+            );
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+            return $this->login($request);
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in Registration',
+                'error' => $error,
+            ]);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function login(Request $request)
     {
-        //
-    }
+        try {
+            $request->validate([
+                'email' => 'email|required',
+                'password' => 'required'
+            ]);
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+            $credentials = [
+                'email' => $request->email,
+                'password' => $request->password,
+            ];
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+            if (!Auth::attempt($credentials)) {
+                return response()->json([
+                    'status_code' => 401,
+                    'message' => 'Unauthorized'
+                ]);
+            }
+            $user = User::where('email', $request->email)->first();
+            if (!Hash::check($request->password, $user->password, [])) {
+                throw new \Exception('Error in Login');
+            }
+            $tokenResult = $user->createToken('authToken')->plainTextToken;
+            return response()->json([
+                'status' => 200,
+                'data' => ['token' => $tokenResult, 'token_type' => 'Bearer', 'user' => Auth::user()],
+            ]);
+        } catch (Exception $error) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Error in Login',
+                'error' => $error,
+            ]);
+        }
     }
 }
