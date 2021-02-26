@@ -59,11 +59,11 @@ Route::prefix('v2')->group(function () {
         });
         Route::prefix('connections')->group(function () {
             Route::post('', [ConnectionController::class, 'store']);
-            Route::delete('{id}', [ConnectionController::class, 'show']);
+            Route::delete('{id}', [ConnectionController::class, 'destroy']);
         });
         Route::prefix('comments')->group(function () {
             Route::post('', [CommentController::class, 'store']);
-            Route::delete('{id}', [CommentController::class, 'show']);
+            Route::delete('{id}', [CommentController::class, 'destroy']);
         });
     });
 });
