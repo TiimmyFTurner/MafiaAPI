@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v2;
 
 use App\Http\Controllers\Controller;
+use App\Models\Event;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
@@ -25,7 +26,38 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $request->validate(
+                [
+                    'title' => 'required',
+                    'description' => 'required',
+                    'location' => 'required',
+                    'date' => 'required'
+                ]
+            );
+            $event = Event::create([
+                'title' => $request->title,
+                'description' => $request->description,
+                'location' => $request->location,
+                'date' => $request->date,
+                'user_id' => auth()->id(),
+                'status' => $request->status,
+
+            ]);
+            return response()->json([
+                'status' => 200,
+                'data' => [
+                    'message' => 'saccess',
+                    'event' => $event
+                ]
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in store',
+                'error' => $error,
+            ]);
+        }
     }
 
     /**
@@ -36,7 +68,21 @@ class EventController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            return response()->json([
+                'status' => 200,
+                'data' => [
+                    'message' => 'saccess',
+                    'event' => Event::find($id)
+                ]
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in get ',
+                'error' => $error,
+            ]);
+        }
     }
 
     /**
@@ -48,7 +94,22 @@ class EventController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+        try {
+            if (auth()->id() == Event::find($id)->user_id) {
+                Event::find($id)->update(['status' => $request->status]);
+                return response()->json([
+                    'status' => 200,
+                    'data' => ['message' => 'update saccessful'],
+                ]);
+            } else abort(403, 'Access Denied');
+        } catch (\Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in update',
+                'error' => $error,
+            ]);
+        }
     }
 
     /**
@@ -59,6 +120,45 @@ class EventController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            if (auth()->id() == Event::find($id)->user_id) {
+                Event::find($id)->delete();
+                return response()->json([
+                    'status' => 200,
+                    'data' => ['message' => 'delete saccessful'],
+                ]);
+            } else abort(403, 'Access Denied');
+        } catch (\Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in delete',
+                'error' => $error,
+            ]);
+        }
+    }
+
+    /**
+     * get the connectios of event .
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function connections($id)
+    {
+        try {
+            return response()->json([
+                'status' => 200,
+                'data' => [
+                    'message' => 'saccess',
+                    'event' => Event::find($id)->connections()
+                ]
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in get ',
+                'error' => $error,
+            ]);
+        }
     }
 }
