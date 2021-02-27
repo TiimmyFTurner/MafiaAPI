@@ -54,11 +54,13 @@ class ConnectionController extends Controller
     public function destroy($id)
     {
         try {
-            Connection::find($id)->delete();
-            return response()->json([
-                'status' => 200,
-                'data' => ['message' => 'delete saccessful'],
-            ]);
+            if (auth()->id() == Connection::find($id)->user_id) {
+                Connection::find($id)->delete();
+                return response()->json([
+                    'status' => 200,
+                    'data' => ['message' => 'delete saccessful'],
+                ]);
+            } else abort(403, 'Access Denied');
         } catch (Exception $error) {
             return response()->json([
                 'status' => 500,
