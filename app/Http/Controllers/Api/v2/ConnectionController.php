@@ -3,20 +3,12 @@
 namespace App\Http\Controllers\Api\v2;
 
 use App\Http\Controllers\Controller;
+use App\Models\Connection;
+use Exception;
 use Illuminate\Http\Request;
 
 class ConnectionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -25,30 +17,32 @@ class ConnectionController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+        try {
+            $request->validate(
+                [
+                    'type' => 'required',
+                    'value' => 'required'
+                ]
+            );
+            $connection = Connection::create([
+                'type' => $request->type,
+                'value' => $request->value,
+                'user_id' => auth()->id(),
+            ]);
+            return response()->json([
+                'status' => 200,
+                'data' => [
+                    'message' => 'saccess',
+                    'connection' => $connection
+                ]
+            ]);
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in store',
+                'error' => $error,
+            ]);
+        }
     }
 
     /**
@@ -59,6 +53,18 @@ class ConnectionController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            Connection::find($id)->delete();
+            return response()->json([
+                'status' => 200,
+                'data' => ['message' => 'delete saccessful'],
+            ]);
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in delete',
+                'error' => $error,
+            ]);
+        }
     }
 }
