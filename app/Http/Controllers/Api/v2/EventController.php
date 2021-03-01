@@ -11,11 +11,15 @@ class EventController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if ($request->filter)
+            return Event::where('location', 'LIKE', "%{$request->filter}%")->orWhere('title', 'LIKE', "%{$request->filter}%")->paginate(10);
+        else
+            return Event::paginate(10);
     }
 
     /**
@@ -145,12 +149,13 @@ class EventController extends Controller
      */
     public function connections($id)
     {
+        // return 'hi';
         try {
             return response()->json([
                 'status' => 200,
                 'data' => [
                     'message' => 'saccess',
-                    'event' => Event::find($id)->connections()
+                    'event' => Event::find($id)->connections()->get()
                 ]
             ]);
         } catch (\Exception $error) {
