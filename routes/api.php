@@ -14,25 +14,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-// use Illuminate\Http\Request;
-// use App\Http\Controllers\Api\v1\AuthController as AuthController1;
-// use App\Http\Controllers\Api\v1\CommentController as CommentController1;
-// use App\Http\Controllers\Api\v1\Event as EventController1;
-// use App\Http\Controllers\Api\v1\Connection as ConnectionController1;
-// use App\Http\Controllers\Api\v1\User as UserController1;
 
-// Route::group(['prefix' => 'v1'], function () {
-//     Route::post('register', [AuthController1::class, 'register']);
-//     Route::post('login', [AuthController1::class, 'login']);
-//     Route::middleware('auth:sanctum')->group(function () {
-//         Route::apiResources([
-//             'event' => EventController1::class,
-//             'connection' => ConnectionController1::class,
-//             'user' => UserController1::class,
-//             'comment' => CommentController1::class
-//         ]);
-//     });
-// });
 
 Route::prefix('v2')->group(function () {
     Route::prefix('auth')->group(function () {
