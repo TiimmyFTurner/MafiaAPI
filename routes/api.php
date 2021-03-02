@@ -55,7 +55,7 @@ Route::prefix('v2')->group(function () {
             Route::put('{id}', [EventController::class, 'update']);
             Route::delete('{id}', [EventController::class, 'destroy']);
             Route::get('{id}/connections', [EventController::class, 'connections']);
-            Route::get('{id}/comment', [EventController::class, 'comment']);
+            Route::get('{id}/comments', [EventController::class, 'comments']);
         });
         Route::prefix('connections')->group(function () {
             Route::post('', [ConnectionController::class, 'store']);
