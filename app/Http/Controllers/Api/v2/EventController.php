@@ -149,13 +149,37 @@ class EventController extends Controller
      */
     public function connections($id)
     {
-        // return 'hi';
         try {
             return response()->json([
                 'status' => 200,
                 'data' => [
                     'message' => 'saccess',
-                    'event' => Event::find($id)->connections()->get()
+                    'connections' => Event::find($id)->connections()->get()
+                ]
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in get ',
+                'error' => $error,
+            ]);
+        }
+    }
+
+    /**
+     * get the connectios of event .
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function comments($id)
+    {
+        try {
+            return response()->json([
+                'status' => 200,
+                'data' => [
+                    'message' => 'saccess',
+                    'comments' => Event::find($id)->comments()->get()
                 ]
             ]);
         } catch (\Exception $error) {
