@@ -99,4 +99,52 @@ class UserController extends Controller
             ]);
         }
     }
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function connections($id)
+    {
+        try {
+            return response()->json([
+                'status' => 200,
+                'data' => [
+                    'message' => 'saccess',
+                    'connections' => User::find($id)->connections()->get()
+                ]
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in get ',
+                'error' => $error,
+            ]);
+        }
+    }
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function events($id)
+    {
+        try {
+            return response()->json([
+                'status' => 200,
+                'data' => [
+                    'message' => 'saccess',
+                    'events' => User::find($id)->events()->get()
+                ]
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Error in get ',
+                'error' => $error,
+            ]);
+        }
+    }
 }
