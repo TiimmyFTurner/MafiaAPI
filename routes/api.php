@@ -45,7 +45,7 @@ Route::prefix('v2')->group(function () {
             Route::get('{id}', [UserController::class, 'show']);
             Route::put('{id}', [UserController::class, 'update']);
             Route::delete('{id}', [UserController::class, 'destroy']);
-            Route::get('{id}/connections', [UserController::class, 'coonections']);
+            Route::get('{id}/connections', [UserController::class, 'connections']);
             Route::get('{id}/events', [UserController::class, 'events']);
         });
         Route::prefix('events')->group(function () {
