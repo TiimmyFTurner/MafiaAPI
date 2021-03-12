@@ -40,18 +40,14 @@ class AuthController extends Controller
                     'password' => 'required'
                 ]
             );
-            $user = User::create([
+            User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
             return $this->login($request);
         } catch (Exception $error) {
-            return response()->json([
-                'status' => 500,
-                'message' => 'Error in Registration',
-                'error' => $error,
-            ]);
+            abort(409, 'Duplicate');
         }
     }
 
@@ -69,10 +65,7 @@ class AuthController extends Controller
             ];
 
             if (!Auth::attempt($credentials)) {
-                return response()->json([
-                    'status_code' => 401,
-                    'message' => 'Unauthorized'
-                ]);
+                abort(401, 'Unauthorized');
             }
             $user = User::where('email', $request->email)->first();
             if (!Hash::check($request->password, $user->password, [])) {
@@ -80,15 +73,10 @@ class AuthController extends Controller
             }
             $tokenResult = $user->createToken('authToken')->plainTextToken;
             return response()->json([
-                'status' => 200,
                 'data' => ['token' => $tokenResult, 'token_type' => 'Bearer', 'user' => Auth::user()],
-            ]);
+            ], 200);
         } catch (Exception $error) {
-            return response()->json([
-                'status_code' => 500,
-                'message' => 'Error in Login',
-                'error' => $error,
-            ]);
+            abort(500, $error);
         }
     }
 }
